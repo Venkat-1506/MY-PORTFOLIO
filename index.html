@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="engineering">
+
+<head>
+  <script>
+    (function(){var m=localStorage.getItem('mode')||'engineering';document.documentElement.setAttribute('data-mode',m);})();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Venkatasaarathy R — Workspace</title>
+  <meta name="description" content="Venkatasaarathy R — Engineering student building toward data engineering." />
+  <meta name="theme-color" content="#1A1816" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C9A87C'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-weight='800' font-size='18' fill='%230A0A0A'%3EVR%3C/text%3E%3C/svg%3E" />
+  <meta name="description" content="Venkatasaarathy R — Engineering student building toward data engineering. Explore projects, skills, certificates and more." />
+  <meta name="keywords" content="Venkatasaarathy, portfolio, data engineering, IIT Madras, full-stack developer" />
+  <meta name="author" content="Venkatasaarathy R" />
+  <meta property="og:title" content="Venkatasaarathy R — Portfolio" />
+  <meta property="og:description" content="Engineering student building toward data engineering." />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/mode.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  
+  <style>
+    /* ===== FORCE CANVAS VISIBLE ===== */
+    #bgCanvas {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      pointer-events: none !important;
+      z-index: 0 !important;
+      display: block !important;
+      background: transparent !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    .loading-screen {
+      z-index: 9999 !important;
+      position: fixed !important;
+      inset: 0 !important;
+    }
+
+    #mainContent {
+      position: relative !important;
+      z-index: 1 !important;
+    }
+
+    /* Make sure doodles don't block canvas */
+    .doodle-overlay {
+      z-index: 0 !important;
+      opacity: 0.3 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============================================ -->
+  <!-- CANVAS - PARTICLE BACKGROUND -->
+  <!-- ============================================ -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- ============================================ -->
+  <!-- PARTICLE ANIMATION SCRIPT - RUNS IMMEDIATELY -->
+  <!-- ============================================ -->
+  <script>
+    (function() {
+      'use strict';
+
+      var CONNECTION_DIST = 180;
+
+      var canvas = document.getElementById('bgCanvas');
+      if (!canvas) return;
+
+      var ctx = canvas.getContext('2d');
+      var W, H;
+      var nodes = [];
+      var animId = null;
+      var running = true;
+
+      var COLORS = {
+        engineering: {
+          accent: { r: 201, g: 168, b: 124 },
+          neutral: { r: 140, g: 136, b: 127 }
+        },
+        curious: [
+          { r: 212, g: 119, b: 74 },
+          { r: 242, g: 169, b: 59 },
+          { r: 255, g: 107, b: 91 },
+          { r: 107, g: 78, b: 142 },
+          { r: 232, g: 160, b: 160 },
+          { r: 74, g: 158, b: 138 }
+        ]
+      };
+
+      function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function getMode() {
+        return document.documentElement.getAttribute('data-mode') || 'engineering';
+      }
+
+      function createNodes() {
+        var count = Math.min(50, Math.floor((W * H) / 60000));
+        nodes = [];
+        for (var i = 0; i < count; i++) {
+          nodes.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            radius: 1.5 + Math.random() * 2.5,
+            phase: Math.random() * Math.PI * 2,
+            type: Math.floor(Math.random() * 4),
+            size: 10 + Math.random() * 18
+          });
+        }
+      }
+
+      function drawEngineering() {
+        var acc = COLORS.engineering;
+
+        for (var i = 0; i < nodes.length; i++) {
+          for (var j = i + 1; j < nodes.length; j++) {
+            var a = nodes[i], b = nodes[j];
+            var dx = a.x - b.x, dy = a.y - b.y;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist >= CONNECTION_DIST) continue;
+
+            var alpha = 1 - dist / CONNECTION_DIST;
+
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = 'rgba(' + acc.neutral.r + ', ' + acc.neutral.g + ', ' + acc.neutral.b + ', ' + (alpha * 0.03) + ')';
+            ctx.lineWidth = 0.3;
+            ctx.stroke();
+          }
+        }
+
+        for (var i = 0; i < nodes.length; i++) {
+          var n = nodes[i];
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + acc.neutral.r + ', ' + acc.neutral.g + ', ' + acc.neutral.b + ', 0.06)';
+          ctx.fill();
+        }
+      }
+
+      function drawCurious() {
+        var pal = COLORS.curious;
+        var time = Date.now();
+
+        for (var i = 0; i < nodes.length; i++) {
+          var n = nodes[i];
+          var c = pal[i % 6];
+
+          var pulse = n.size * (0.8 + 0.4 * Math.sin(time / 3000 + n.phase));
+
+          ctx.save();
+          ctx.translate(n.x, n.y);
+          ctx.rotate(n.phase + time / 5000);
+          ctx.globalAlpha = 0.4;
+          ctx.strokeStyle = 'rgba(' + c.r + ', ' + c.g + ', ' + c.b + ', 0.4)';
+          ctx.lineWidth = 1.2;
+
+          var s = pulse / 2;
+          var t = n.type % 4;
+          ctx.beginPath();
+          if (t === 0) {
+            ctx.arc(0, 0, s, 0, Math.PI * 2);
+          } else if (t === 1) {
+            ctx.strokeRect(-s, -s, pulse, pulse);
+            ctx.restore();
+            continue;
+          } else if (t === 2) {
+            ctx.moveTo(0, -s);
+            ctx.lineTo(-s, s);
+            ctx.lineTo(s, s);
+            ctx.closePath();
+          } else {
+            ctx.moveTo(-s, 0);
+            ctx.lineTo(s, 0);
+            ctx.moveTo(0, -s);
+            ctx.lineTo(0, s);
+          }
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      function draw() {
+        if (!running) return;
+        ctx.clearRect(0, 0, W, H);
+
+        var mode = getMode();
+        var time = Date.now();
+
+        for (var i = 0; i < nodes.length; i++) {
+          var n = nodes[i];
+          n.x += n.vx + Math.sin(time / 4000 + n.phase) * 0.08;
+          n.y += n.vy + Math.cos(time / 5000 + n.phase) * 0.08;
+
+          if (n.x < -60) n.x = W + 60;
+          if (n.x > W + 60) n.x = -60;
+          if (n.y < -60) n.y = H + 60;
+          if (n.y > H + 60) n.y = -60;
+        }
+
+        if (mode === 'engineering') {
+          drawEngineering();
+        } else {
+          drawCurious();
+        }
+
+        animId = requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', function() {
+        resize();
+        createNodes();
+      });
+
+      resize();
+      createNodes();
+      draw();
+
+      window.stopParticles = function() {
+        running = false;
+        if (animId) { cancelAnimationFrame(animId); animId = null; }
+      };
+    })();
+  </script>
+
+  <!-- ============================================ -->
+  <!-- LOADING SCREEN -->
+  <!-- ============================================ -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="load-bg-grid"></div>
+    <div class="load-bg-aurora"></div>
+    <div class="load-orb load-orb-1"></div>
+    <div class="load-orb load-orb-2"></div>
+    <div class="load-code-rain" id="loadCodeRain"></div>
+    <div class="load-scanline"></div>
+    <div class="load-eng-elements" id="loadEngElements">
+      <div class="load-node-grid" id="loadNodeGrid"></div>
+      <div class="load-scanner-bar"></div>
+      <div class="load-terminal-boot" id="loadTerminalBoot"></div>
+      <div class="load-hex-stream" id="loadHexStream"></div>
+      <div class="load-circuit-traces"><span></span><span></span><span></span></div>
+    </div>
+    <div class="load-curious-elements" id="loadCuriousElements">
+      <div class="load-bubbles" id="loadBubbles"></div>
+      <div class="load-doodle-dots" id="loadDoodleDots"></div>
+      <div class="load-confetti" id="loadConfetti"></div>
+      <div class="load-ink-splash" id="loadInkSplash"></div>
+    </div>
+    <div class="loading-inner">
+      <div class="load-logo-wrap">
+        <div class="load-logo">&lt;/&gt;</div>
+      </div>
+      <div class="loading-letters">
+        <span class="load-letter">V</span><span class="load-letter">E</span>
+        <span class="load-letter">N</span><span class="load-letter">K</span>
+        <span class="load-letter">A</span><span class="load-letter">T</span>
+      </div>
+      <div class="loading-subtitle">Venkatasaarathy <span>R</span></div>
+      <div class="load-tech-typewriter">
+        <span class="load-tech-prefix">&gt;</span>
+        <span class="load-tech-word" id="loadTechWord">_</span>
+      </div>
+      <div class="loading-bar">
+        <div class="loading-progress"></div>
+      </div>
+      <p class="loading-text" id="loadingText">Initializing workspace...</p>
+      <div class="load-pct" id="loadPct"></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- DOODLES -->
+  <!-- ============================================ -->
+  <div class="doodle-overlay">
+    <img src="assets/doodles/plane.svg" class="doodle-float doodle-1" alt="" />
+    <img src="assets/doodles/lightbulb.svg" class="doodle-float doodle-2" alt="" />
+    <img src="assets/doodles/notebook.svg" class="doodle-float doodle-3" alt="" />
+    <img src="assets/doodles/graph-stats.svg" class="doodle-float doodle-4" alt="" />
+    <img src="assets/doodles/database-code.svg" class="doodle-float doodle-5" alt="" />
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MAIN CONTENT -->
+  <!-- ============================================ -->
+  <div id="mainContent" style="display:none;">
+
+    <!-- header -->
+    <header class="header" id="header">
+      <div class="header-container">
+        <a href="#" class="header-logo">
+          <span class="logo-mark">&lt;/&gt;</span>
+          <span class="logo-text">Venkatasaarathy <span>R</span></span>
+        </a>
+        <nav class="header-nav" id="headerNav">
+          <ul>
+            <li><a href="#hero" class="nav-link active" data-section="hero">Home</a></li>
+            <li><a href="#about" class="nav-link" data-section="about">About</a></li>
+            <li><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
+            <li><a href="#skills" class="nav-link" data-section="skills">Skills</a></li>
+            <li><a href="#certificates" class="nav-link" data-section="certificates">Certs</a></li>
+            <li><a href="#beyond" class="nav-link" data-section="beyond">Beyond</a></li>
+            <li><a href="#contact" class="nav-link" data-section="contact">Connect</a></li>
+          </ul>
+        </nav>
+        <div class="header-actions">
+          <div class="mode-toggle-wrap">
+            <button class="mode-toggle" id="modeToggle">
+              <span class="mode-track"><span class="mode-handle"></span></span>
+              <span class="mode-label" id="modeLabel">Engineering</span>
+            </button>
+            <span class="mode-hint" id="modeHint">✨ Try Curious Mode</span>
+          </div>
+          <button class="header-toggle" id="headerToggle"
+            aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+        </div>
+      </div>
+    </header>
+
+    <!-- sidebar -->
+    <aside class="social-sidebar" id="socialSidebar">
+      <div class="social-sidebar-inner">
+        <div class="social-avatar"><img src="assets/profile/sketch-photo.png" alt="Venkatasaarathy R"
+            id="sidebarAvatar" /></div>
+        <div class="social-divider"></div>
+        <div class="social-links" id="socialLinks"></div>
+        <div class="social-divider"></div>
+        <div class="social-mode-indicator"><span class="mode-dot"></span><span class="mode-text"
+            id="socialModeText">System</span></div>
+      </div>
+    </aside>
+
+    <!-- mobile social strip -->
+    <div class="mobile-social-strip" id="mobileSocialStrip">
+      <a href="https://github.com/Venkat-1506" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48 0-.24-.01-.88-.01-1.73-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.9 1.54 2.36 1.1 2.94.84.09-.65.35-1.1.64-1.35-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02.8-.22 1.65-.33 2.5-.33.85 0 1.7.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85 0 1.34-.01 2.42-.01 2.75 0 .26.18.58.69.48C19.13 20.17 22 16.42 22 12c0-5.52-4.48-10-10-10z" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/venkatasaarathy-r-73a226386" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z" stroke="currentColor" stroke-width="1.8" fill="none"/><rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+      </a>
+      <a href="https://leetcode.com/u/Venkatasaarathy/" target="_blank" rel="noopener" aria-label="LeetCode">
+        <svg viewBox="0 0 24 24"><path d="M16.102 16.892c-.165 0-.33-.042-.473-.126l-5.491-3.382c-.217-.133-.356-.367-.356-.618v-2.576c0-.251.139-.485.356-.618l5.491-3.382c.142-.084.307-.126.473-.126.163 0 .327.041.471.125.287.169.461.478.461.81v1.434c0 .251-.138.485-.356.618l-3.178 1.956c-.217.134-.356.367-.356.62s.139.485.356.62l3.178 1.958c.218.133.356.366.356.618v1.434c0 .332-.174.641-.461.81-.144.084-.308.126-.471.126zm5.345-4.892c0 .551-.195 1.092-.578 1.525l-5.686 6.469c-.699.795-1.717 1.276-2.829 1.276h-3.843c-.44 0-.797-.357-.797-.798 0-.44.357-.798.797-.798h3.843c.592 0 1.148-.301 1.488-.805l5.686-6.469c.195-.221.299-.503.299-.799 0-.296-.104-.578-.299-.8l-5.686-6.468c-.34-.504-.896-.806-1.488-.806h-3.843c-.44 0-.797-.358-.797-.799 0-.44.357-.798.797-.798h3.843c1.112 0 2.13.481 2.829 1.276l5.686 6.469c.382.433.578.974.578 1.524z" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+      </a>
+      <a href="mailto:venkatasaarathy@gmail.com" aria-label="Email">
+        <svg viewBox="0 0 24 24"><path d="M4 6l8 5 8-5M4 6v12a2 2 0 002 2h12a2 2 0 002-2V6" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+      </a>
+    </div>
+
+    <!-- mobile bottom nav -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+      <a href="#hero" data-section="hero" class="active">
+        <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M5 10v8a2 2 0 002 2h10a2 2 0 002-2v-8" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="#about" data-section="about">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+        <span>About</span>
+      </a>
+      <a href="#projects" data-section="projects">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8" fill="none"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8" fill="none"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8" fill="none"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+        <span>Projects</span>
+      </a>
+      <a href="#certificates" data-section="certificates">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+        <span>Certs</span>
+      </a>
+      <a href="#resume" data-section="resume">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M14 2v6h6M10 13h4M10 17h4" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+        <span>Resume</span>
+      </a>
+      <a href="#contact" data-section="contact">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+        <span>Contact</span>
+      </a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <canvas id="hero3dCanvas" aria-hidden="true"></canvas>
+      <div class="hero-aurora" aria-hidden="true">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+        <div class="aurora-blob blob-3"></div>
+      </div>
+      <div class="hero-grid-bg" aria-hidden="true"></div>
+      <div class="hero-bg-doodles" aria-hidden="true">
+        <img src="assets/doodles/plane.svg" class="bg-doodle d1" alt="" />
+        <img src="assets/doodles/lightbulb.svg" class="bg-doodle d2" alt="" />
+        <img src="assets/doodles/notebook.svg" class="bg-doodle d3" alt="" />
+        <img src="assets/doodles/graph-stats.svg" class="bg-doodle d4" alt="" />
+        <img src="assets/doodles/database-code.svg" class="bg-doodle d5" alt="" />
+      </div>
+      <div class="hero-container">
+        <div class="hero-inner">
+          <div class="hero-text">
+            <h1 class="hero-name">
+              <span class="name-first">Venkatasaarathy</span>
+              <span class="name-last gold-r">R</span>
+            </h1>
+            <div class="hero-role">
+              <p class="hero-typewriter" id="heroTypewriter"></p>
+              <p class="hero-school">Computer Science Engineering Student · IIT Madras BS Data Science</p>
+            </div>
+            <p class="hero-tagline">Building systems that turn raw data into <span class="accent-underline">meaningful decisions.</span></p>
+            <div class="hero-actions">
+              <a href="#projects" class="btn-primary btn-glow">View Projects</a>
+              <a href="#contact" class="btn-resume">Contact Me</a>
+              <a href="assets/resume/Venkatasaarathy_R_Resume.pdf" download class="btn-resume btn-resume-download">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+                Resume
+              </a>
+            </div>
+            <div class="hero-social">
+              <a href="https://github.com/Venkat-1506" target="_blank" rel="noopener" aria-label="GitHub" class="hero-social-link">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48 0-.24-.01-.88-.01-1.73-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.9 1.54 2.36 1.1 2.94.84.09-.65.35-1.1.64-1.35-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02.8-.22 1.65-.33 2.5-.33.85 0 1.7.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85 0 1.34-.01 2.42-.01 2.75 0 .26.18.58.69.48C19.13 20.17 22 16.42 22 12c0-5.52-4.48-10-10-10z" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+                <span>GitHub</span>
+              </a>
+              <a href="https://www.linkedin.com/in/venkatasaarathy-r-73a226386" target="_blank" rel="noopener" aria-label="LinkedIn" class="hero-social-link">
+                <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z" stroke="currentColor" stroke-width="1.8" fill="none"/><rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+                <span>LinkedIn</span>
+              </a>
+              <a href="https://leetcode.com/u/Venkatasaarathy/" target="_blank" rel="noopener" aria-label="LeetCode" class="hero-social-link">
+                <svg viewBox="0 0 24 24"><path d="M16.102 16.892c-.165 0-.33-.042-.473-.126l-5.491-3.382c-.217-.133-.356-.367-.356-.618v-2.576c0-.251.139-.485.356-.618l5.491-3.382c.142-.084.307-.126.473-.126.163 0 .327.041.471.125.287.169.461.478.461.81v1.434c0 .251-.138.485-.356.618l-3.178 1.956c-.217.134-.356.367-.356.62s.139.485.356.62l3.178 1.958c.218.133.356.366.356.618v1.434c0 .332-.174.641-.461.81-.144.084-.308.126-.471.126zm5.345-4.892c0 .551-.195 1.092-.578 1.525l-5.686 6.469c-.699.795-1.717 1.276-2.829 1.276h-3.843c-.44 0-.797-.357-.797-.798 0-.44.357-.798.797-.798h3.843c.592 0 1.148-.301 1.488-.805l5.686-6.469c.195-.221.299-.503.299-.799 0-.296-.104-.578-.299-.8l-5.686-6.468c-.34-.504-.896-.806-1.488-.806h-3.843c-.44 0-.797-.358-.797-.799 0-.44.357-.798.797-.798h3.843c1.112 0 2.13.481 2.829 1.276l5.686 6.469c.382.433.578.974.578 1.524z" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+                <span>LeetCode</span>
+              </a>
+              <a href="mailto:venkatasaarathy@gmail.com" aria-label="Email" class="hero-social-link">
+                <svg viewBox="0 0 24 24"><path d="M4 6l8 5 8-5M4 6v12a2 2 0 002 2h12a2 2 0 002-2V6" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+                <span>Email</span>
+              </a>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="hero-image-frame">
+              <div class="hero-glow"></div>
+              <img src="assets/profile/sketch-photo.png" alt="Venkatasaarathy R" id="heroPortrait" class="hero-portrait-img" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about" id="about">
+      <div class="container">
+        <div class="about-inner">
+          <div class="about-text">
+            <div class="section-header">
+              <span class="section-tag">About Me</span>
+              <h2 class="section-title">Who <span class="highlight">I am</span></h2>
+            </div>
+            <p class="about-desc">I'm a Computer Science Engineering student at IIT Madras, pursuing a BS in Data Science alongside. I build systems that turn raw data into meaningful decisions — from full-stack web apps to data pipelines.</p>
+            <p class="about-desc">My journey started with curiosity about how things work, and evolved into a passion for software engineering, data engineering, and problem-solving. I've built projects ranging from campus lost-and-found portals to handwritten digit recognition systems.</p>
+            <p class="about-desc">Currently diving deep into data engineering fundamentals — SQL, PostgreSQL, Pandas, and ETL pipelines — while continuing to build practical solutions that solve real-world problems.</p>
+            <div class="about-details">
+              <div class="about-detail-item">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+                <span>India</span>
+              </div>
+              <div class="about-detail-item">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+                <span>IIT Madras BS Data Science</span>
+              </div>
+              <div class="about-detail-item">
+                <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+                <span>Building since 2023</span>
+              </div>
+            </div>
+          </div>
+          <div class="about-visual">
+            <div class="about-image-frame">
+              <div class="about-glow"></div>
+              <img src="assets/profile/about.png" alt="Venkatasaarathy R" class="about-portrait-img" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS STRIP -->
+    <section class="stats-bar" id="stats">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stats-item">
+            <span class="stats-number" data-count="130">0</span>
+            <span class="stats-label">Problems Solved</span>
+          </div>
+          <div class="stats-divider"></div>
+          <div class="stats-item">
+            <span class="stats-number" data-count="7">0</span>
+            <span class="stats-label">Projects Built</span>
+          </div>
+          <div class="stats-divider"></div>
+          <div class="stats-item">
+            <span class="stats-number" data-count="12">0</span>
+            <span class="stats-label">Certifications</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="projects" id="projects">
+      <div class="container">
+        <div class="section-header"><span class="section-tag">Case Studies</span>
+          <h2 class="section-title">Projects I've <span class="highlight">built</span></h2>
+          <p class="section-desc">Each project is a story — here's what I learned building them.</p>
+        </div>
+        <div class="projects-carousel-wrap">
+          <div class="projects-carousel" id="projectsContainer">
+            <div class="carousel-track" id="carouselTrack"></div>
+          </div>
+          <div class="carousel-controls">
+            <button class="carousel-btn carousel-prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
+            <div class="carousel-dots" id="carouselDots"></div>
+            <button class="carousel-btn carousel-next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
+          </div>
+          <div style="text-align:center;margin-top:var(--space-6)"><a href="projects-full.html" class="btn-primary btn-pulse">View All Projects</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="skills" id="skills">
+      <div class="skills-aurora"></div>
+      <div class="container">
+        <div class="section-header"><span class="section-tag">Skills</span>
+          <h2 class="section-title">Tools I <span class="highlight">use</span></h2>
+        </div>
+        <div class="skills-grid" id="skillsContainer"></div>
+      </div>
+    </section>
+
+    <!-- CERTIFICATES -->
+    <section class="certificates" id="certificates">
+      <div class="container">
+        <div class="section-header"><span class="section-tag">Certs</span>
+          <h2 class="section-title">Certificates I've <span class="highlight">earned</span></h2>
+          <p class="section-desc">Scroll to browse the collection.</p>
+        </div>
+        <div class="cert-stack" id="certsContainer"></div>
+        <div style="text-align:center;margin-top:var(--space-8)"><a href="certificates-full.html" class="btn-primary btn-pulse">View All Certificates</a></div>
+      </div>
+    </section>
+
+    <!-- RESUME -->
+    <section class="resume" id="resume">
+      <div class="container">
+        <div class="section-header"><span class="section-tag">Resume</span>
+          <h2 class="section-title">My <span class="highlight">Resume</span></h2>
+          <p class="section-desc">Preview or download my latest resume.</p>
+        </div>
+        <div class="resume-actions">
+          <a href="#" class="btn-primary btn-glow resume-preview-btn" id="resumePreviewBtn2">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+            Preview Resume
+          </a>
+          <a href="assets/resume/Venkatasaarathy_R_Resume.pdf" download class="btn-secondary resume-download-btn">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+            Download Resume
+          </a>
+        </div>
+        <div class="resume-preview">
+          <embed src="assets/resume/Venkatasaarathy_R_Resume.pdf" type="application/pdf" class="resume-preview-embed" />
+        </div>
+      </div>
+    </section>
+
+    <!-- BEYOND -->
+    <section class="beyond" id="beyond">
+      <div class="container">
+        <div class="section-header"><span class="section-tag">Beyond Coding</span>
+          <h2 class="section-title">What I do <span class="highlight">outside</span></h2>
+        </div>
+        <div class="beyond-grid" id="beyondGrid"></div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact" id="contact">
+      <div class="container">
+        <div class="section-header"><span class="section-tag">Connect</span>
+          <h2 class="section-title">Let's build <span class="highlight">something</span></h2>
+          <p class="contact-desc">Have an idea, a project, or just want to chat? Reach out.</p>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-info">
+            <div class="contact-info-card">
+              <div class="info-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </div>
+              <div class="info-details">
+                <h3>Location</h3>
+                <p>India</p>
+              </div>
+            </div>
+            <div class="contact-info-card">
+              <div class="info-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+              <div class="info-details">
+                <h3>Email</h3>
+                <p><a href="mailto:venkatasaarathy@gmail.com">venkatasaarathy@gmail.com</a></p>
+              </div>
+            </div>
+            <div class="contact-info-card">
+              <div class="info-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"></path>
+                </svg>
+              </div>
+              <div class="info-details">
+                <h3>Phone</h3>
+                <p><a href="tel:+918667461604">+91 8667461604</a></p>
+              </div>
+            </div>
+            <div class="contact-info-card contact-social-card">
+              <div class="info-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path>
+                </svg>
+              </div>
+              <div class="info-details" style="flex:1">
+                <h3>Social</h3>
+                <div class="contact-social-links" id="contactSocialLinks"></div>
+              </div>
+            </div>
+          </div>
+          <div class="contact-form-container">
+            <form class="contact-form" id="contactForm" novalidate>
+              <div class="form-row">
+                <div class="form-group"><label for="formName">Name <span aria-hidden="true">*</span></label><input
+                    type="text" id="formName" placeholder="Your name" required /><span class="form-error"
+                    id="nameError"></span></div>
+                <div class="form-group"><label for="formEmail">Email <span aria-hidden="true">*</span></label><input
+                    type="email" id="formEmail" placeholder="you@example.com" required /><span class="form-error"
+                    id="emailError"></span></div>
+              </div>
+              <div class="form-group"><label for="formSubject">Subject</label><input type="text" id="formSubject"
+                  placeholder="What's this about?" /></div>
+              <div class="form-group"><label for="formMessage">Message <span
+                    aria-hidden="true">*</span></label><textarea id="formMessage" rows="4"
+                  placeholder="Tell me about your idea..." required></textarea><span class="form-error"
+                  id="messageError"></span></div>
+              <button type="submit" class="btn-primary" id="formSubmit">Send Message</button>
+              <div class="form-status" id="formStatus"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer" id="footer">
+      <div class="footer-container">
+        <div class="footer-shell">
+          <span class="shell-prompt">◈</span>
+          <span class="shell-path">venkat@portfolio</span>
+          <span class="shell-colon">:</span>
+          <span class="shell-tilde">~</span>
+          <span class="shell-dollar">$</span>
+          <span class="shell-cmd">./build --footer</span>
+        </div>
+
+        <div class="footer-body">
+          <div class="footer-brand">
+            <div class="footer-avatar"><img src="assets/profile/sketch-photo.png" alt="Venkatasaarathy R" /></div>
+            <div class="footer-brand-text">
+              <h3>Venkatasaarathy <span>R</span></h3>
+              <p>Building the future, one line of code at a time.</p>
+            </div>
+          </div>
+
+          <div class="footer-nav">
+            <h4>Navigate</h4>
+            <ul>
+              <li><a href="#hero">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#projects">Projects</a></li>
+              <li><a href="#skills">Skills</a></li>
+              <li><a href="#certificates">Certs</a></li>
+              <li><a href="#beyond">Beyond</a></li>
+              <li><a href="#contact">Connect</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-social">
+            <h4>Connect</h4>
+            <div class="footer-social-links" id="footerSocial"></div>
+            <div class="footer-mode-row">
+              <span class="mode-dot"></span>
+              <span class="footer-mode-label">Mode</span>
+              <span class="footer-mode" id="footerMode">System View</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-quote-line">
+          <svg class="quote-ornament" viewBox="0 0 24 24" width="18" height="18">
+            <path d="M10 11h-4a1 1 0 01-1-1V7a1 1 0 011-1h3a1 1 0 011 1v6c0 2.667-1.333 4-4 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <path d="M19 11h-4a1 1 0 01-1-1V7a1 1 0 011-1h3a1 1 0 011 1v6c0 2.667-1.333 4-4 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </svg>
+          <p class="footer-quote-text">"Create something better than this."</p>
+          <span class="footer-quote-author">— Venkat</span>
+        </div>
+
+        <div class="footer-bottom">
+          <p class="footer-copy">&copy; <span id="footerYear">2024</span> Venkatasaarathy R. All rights reserved.</p>
+          <div class="footer-doodles">
+            <img src="assets/doodles/plane.svg" alt="" />
+            <img src="assets/doodles/lightbulb.svg" alt="" />
+            <img src="assets/doodles/notebook.svg" alt="" />
+            <img src="assets/doodles/graph-stats.svg" alt="" />
+            <img src="assets/doodles/database-code.svg" alt="" />
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MODALS -->
+  <!-- ============================================ -->
+  <div class="modal" id="projectModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-project-content"><button class="modal-close">✕</button>
+      <div class="modal-project-body">
+        <div class="modal-project-hero">
+          <img id="modalImg" src="" alt="" />
+          <div class="modal-project-hero-fallback" id="modalHeroFallback"></div>
+          <div class="modal-project-hero-overlay">
+            <h2 id="modalTitle"></h2>
+            <div class="modal-project-hero-tags" id="modalHeroTech"></div>
+          </div>
+        </div>
+        <div class="modal-project-details">
+          <div class="modal-project-section">
+            <div class="modal-project-section-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </div>
+            <div class="modal-project-section-content">
+              <h3>Problem</h3>
+              <p id="modalProblem"></p>
+            </div>
+          </div>
+          <div class="modal-project-section">
+            <div class="modal-project-section-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+            </div>
+            <div class="modal-project-section-content">
+              <h3>Challenge</h3>
+              <p id="modalChallenge"></p>
+            </div>
+          </div>
+          <div class="modal-project-section">
+            <div class="modal-project-section-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="modal-project-section-content">
+              <h3>Solution</h3>
+              <p id="modalSolution"></p>
+            </div>
+          </div>
+          <div class="modal-project-section" id="modalFeaturesSection">
+            <div class="modal-project-section-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <div class="modal-project-section-content">
+              <h3>Features</h3>
+              <div class="modal-project-features" id="modalFeatures"></div>
+            </div>
+          </div>
+          <div class="modal-project-section" id="modalLessonsSection">
+            <div class="modal-project-section-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="modal-project-section-content">
+              <h3>Lessons Learned</h3>
+              <p id="modalLessons"></p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-project-footer">
+          <div class="modal-project-actions">
+            <a href="#" id="modalGithub" class="btn-primary" target="_blank" rel="noopener">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              View on GitHub
+            </a>
+            <a href="#" id="modalLive" class="btn-primary" target="_blank" rel="noopener">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              Live Demo
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="certModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content"><button class="modal-close">✕</button>
+      <div class="modal-body cert-modal-body"><img id="certModalImg" src="" alt="" />
+        <div class="modal-info">
+          <h2 id="certModalTitle"></h2>
+          <p id="certModalIssuer"></p>
+          <p id="certModalCat"></p>
+          <p id="certModalAchieve"></p>
+          <p id="certModalDesc" class="cert-desc"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- back to top -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M18 15l-6-6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+  </button>
+
+  <div class="modal resume-modal" id="resumeModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content modal-content-wide"><button class="modal-close">✕</button>
+      <div class="modal-body resume-modal-body">
+        <div class="resume-modal-header">
+          <h2>Resume</h2>
+          <div class="resume-modal-actions">
+            <a href="assets/resume/Venkatasaarathy_R_Resume.pdf" target="_blank" class="btn-secondary resume-modal-open">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+              Open
+            </a>
+            <a href="assets/resume/Venkatasaarathy_R_Resume.pdf" class="btn-primary resume-modal-download" id="resumeDownloadBtn">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+              Download
+            </a>
+          </div>
+        </div>
+        <div class="resume-modal-viewer">
+          <embed src="assets/resume/Venkatasaarathy_R_Resume.pdf" type="application/pdf" class="resume-embed" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SVG ICON SPRITE -->
+  <!-- ============================================ -->
+  <svg style="position:absolute;width:0;height:0;visibility:hidden" aria-hidden="true">
+    <defs>
+      <symbol id="compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36z"/>
+      </symbol>
+      <symbol id="typewriter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="14" rx="2"/>
+        <path d="M6 18v2h12v-2"/>
+        <path d="M6 10h12"/>
+        <path d="M6 14h8"/>
+      </symbol>
+      <symbol id="book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+        <path d="M12 2v10l3-1.5L18 12V2"/>
+      </symbol>
+      <symbol id="pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+      </symbol>
+      <symbol id="github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
+      </symbol>
+      <symbol id="linkedin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"/>
+        <rect x="2" y="9" width="4" height="12"/>
+        <circle cx="4" cy="4" r="2"/>
+      </symbol>
+      <symbol id="instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+      </symbol>
+      <symbol id="leetcode" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16.102 16.892c-.165 0-.33-.042-.473-.126l-5.491-3.382c-.217-.133-.356-.367-.356-.618v-2.576c0-.251.139-.485.356-.618l5.491-3.382c.142-.084.307-.126.473-.126.163 0 .327.041.471.125.287.169.461.478.461.81v1.434c0 .251-.138.485-.356.618l-3.178 1.956c-.217.134-.356.367-.356.62s.139.485.356.62l3.178 1.958c.218.133.356.366.356.618v1.434c0 .332-.174.641-.461.81-.144.084-.308.126-.471.126zm5.345-4.892c0 .551-.195 1.092-.578 1.525l-5.686 6.469c-.699.795-1.717 1.276-2.829 1.276h-3.843c-.44 0-.797-.357-.797-.798 0-.44.357-.798.797-.798h3.843c.592 0 1.148-.301 1.488-.805l5.686-6.469c.195-.221.299-.503.299-.799 0-.296-.104-.578-.299-.8l-5.686-6.468c-.34-.504-.896-.806-1.488-.806h-3.843c-.44 0-.797-.358-.797-.799 0-.44.357-.798.797-.798h3.843c1.112 0 2.13.481 2.829 1.276l5.686 6.469c.382.433.578.974.578 1.524z"/>
+      </symbol>
+      <symbol id="mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ============================================ -->
+  <!-- SCRIPTS -->
+  <!-- ============================================ -->
+  <script src="data/portfolio-data.js"></script>
+  <script>
+    // ----- enhance data with svg icons -----
+    window.portfolioData.beyondCoding = [
+      { title: "Chess, Cricket & Travel", description: "I play chess and cricket, love exploring new things, and enjoy travelling whenever I get the chance.", icon: "compass" },
+      { title: "Typewriting", description: "Senior Grade with Distinction — I value precision and speed in all forms of communication.", icon: "typewriter" },
+      { title: "Continuous Learning", description: "Always reading, always curious. I believe the best engineers never stop learning.", icon: "book" }
+    ];
+
+  </script>
+
+  <script src="js/sections/hero.js"></script>
+  <script src="js/sections/ui.js"></script>
+  <script src="js/sections/projects.js"></script>
+  <script src="js/sections/certificates.js"></script>
+  <script src="js/sections/contact.js"></script>
+  <script src="js/sections/skills.js"></script>
+  <script src="js/sections/journey.js"></script>
+  <script src="js/sections/stats.js"></script>
+  <script src="js/hero-3d.js"></script>
+  <script src="js/mode-switcher.js"></script>
+  <script src="js/cursor.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- resume modal, copyright year, app-ready fallback -->
+  <script>
+    document.getElementById('resumeDownloadBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      var url = 'assets/resume/Venkatasaarathy_R_Resume.pdf';
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.responseType = 'blob';
+      xhr.onload = function() {
+        var blob = xhr.response;
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Venkatasaarathy_R_Resume.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      };
+      xhr.onerror = function() {
+        window.open(url, '_blank');
+      };
+      xhr.send();
+    });
+
+    function openResumeModal() {
+      const modal = document.getElementById('resumeModal');
+      if (!modal) return;
+      if (typeof window.closeAllModals === 'function') window.closeAllModals();
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeResumeModal() {
+      const modal = document.getElementById('resumeModal');
+      if (!modal) return;
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('click', function(e) {
+      const previewBtn = e.target.closest('#resumePreviewBtn, #resumePreviewBtn2');
+      if (previewBtn) { e.preventDefault(); openResumeModal(); return; }
+      if (e.target.closest('#resumeModal .modal-overlay') || e.target.closest('#resumeModal .modal-close')) {
+        closeResumeModal();
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeResumeModal();
+    });
+
+    document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+    document.addEventListener('app:ready', function () {
+      if (typeof CursorController !== 'undefined') {
+        const mode = localStorage.getItem('mode') || 'engineering';
+        CursorController.init(mode);
+      }
+    });
+  </script>
+
+  <!-- client-side 404: unknown hash routes -->
+  <script>
+    (function() {
+      var valid = ['hero', 'about', 'projects', 'skills', 'certificates', 'beyond', 'contact', 'resume'];
+      var hash = window.location.hash.replace('#', '');
+      if (hash && valid.indexOf(hash) === -1) {
+        if (typeof App !== 'undefined' && App.initialized) {
+          var toast = document.createElement('div');
+          toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 20px;background:var(--bg-surface);border:1px solid var(--border-color);border-radius:12px;font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-secondary);z-index:99999;display:flex;align-items:center;gap:8px;backdrop-filter:blur(12px);box-shadow:var(--shadow);opacity:0;transition:opacity 0.3s ease;';
+          toast.innerHTML = '<span style="color:#e74c3c;font-weight:700;">✕</span> 404 — <span style="color:var(--accent-primary);">#' + hash + '</span> doesn\'t exist. <a href="/" style="color:var(--accent-primary);text-decoration:underline;margin-left:4px;">Go home</a>';
+          document.body.appendChild(toast);
+          requestAnimationFrame(function() { toast.style.opacity = '1'; });
+          setTimeout(function() { toast.style.opacity = '0'; setTimeout(function() { toast.remove(); }, 400); }, 4000);
+        }
+        history.replaceState(null, null, '#hero');
+      }
+    })();
+  </script>
+
+</body>
+
+</html>
