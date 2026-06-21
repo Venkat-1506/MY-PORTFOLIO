@@ -64,8 +64,8 @@
 
     /* Curious Mode — EXTRA BUBBLE FONTS */
     --font-curious-display: 'Baloo 2', 'Fredoka', 'Quicksand', cursive;
-    --font-curious-body: 'Baloo 2', 'Fredoka', 'Quicksand', cursive;
-    --font-curious-accent: 'Baloo 2', 'Fredoka', 'Quicksand', cursive;
+    --font-curious-body: 'Outfit', 'Inter', sans-serif;
+    --font-curious-accent: 'Outfit', 'Inter', sans-serif;
     --font-curious-mono: 'Space Mono', monospace;
     --font-curious-serif: 'Playfair Display', serif;
 
@@ -140,9 +140,9 @@ html[data-mode="curious"] {
     --border-hover: rgba(212, 119, 74, 0.15);
 
     /* EXTRA BUBBLE FONTS — Baloo 2 with rounded curves */
-    --font-display: 'Baloo 2', 'Fredoka', 'Quicksand', cursive;
-    --font-body: 'Baloo 2', 'Fredoka', 'Quicksand', cursive;
-    --font-accent: 'Baloo 2', 'Fredoka', 'Quicksand', cursive;
+    --font-display: var(--font-curious-display);
+    --font-body: var(--font-curious-body);
+    --font-accent: var(--font-curious-accent);
     --font-mono: 'Space Mono', monospace;
     --font-serif: 'Playfair Display', serif;
 

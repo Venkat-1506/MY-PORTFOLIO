@@ -241,10 +241,9 @@ html[data-mode="curious"] section:nth-child(even) {
 }
 
 html[data-mode="curious"],
-html[data-mode="curious"] body,
-html[data-mode="curious"] * {
-    font-family: var(--font-display) !important;
-    letter-spacing: 0.03em !important;
+html[data-mode="curious"] body {
+    font-family: var(--font-body);
+    letter-spacing: 0.03em;
 }
 
 html[data-mode="curious"] .name-first {
