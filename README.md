@@ -156,7 +156,7 @@ https://github.com/Venkat-1506
 https://linkedin.com/in/venkatasaarathy-r-73a226386
 
 ### Instagram
-https://instagram.com/_venkat_1506
+https://instagram.com/venxora_7
 
 ### Portfolio
 https://venkatasaarathy.netlify.app
