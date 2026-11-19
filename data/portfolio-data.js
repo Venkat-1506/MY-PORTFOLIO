@@ -134,7 +134,7 @@ const portfolioData = {
 
     social: {
         github: "https://github.com/Venkat-1506",
-        linkedin: "https://www.linkedin.com/in/venkatasaarathy-r-73a226386",
+        linkedin: "https://www.linkedin.com/in/venkatasaarathy/",
         instagram: "https://www.instagram.com/venxora_7/",
         twitter: "",
         leetcode: "https://leetcode.com/u/Venkatasaarathy/",

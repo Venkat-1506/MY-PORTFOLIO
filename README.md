@@ -153,7 +153,7 @@ A professional multi-page college website featuring modern UI, responsive design
 https://github.com/Venkat-1506
 
 ### LinkedIn
-https://linkedin.com/in/venkatasaarathy-r-73a226386
+https://www.linkedin.com/in/venkatasaarathy/
 
 ### Instagram
 https://instagram.com/venxora_7
