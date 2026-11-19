@@ -1,0 +1,11 @@
+[[redirects]]
+  from = "/projects-full.html"
+  to = "/projects-full"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/certificates-full.html"
+  to = "/certificates-full"
+  status = 301
+  force = true
